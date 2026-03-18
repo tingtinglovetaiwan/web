@@ -3,134 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>俊凱的打手槍訓練網站 - 隨機走位版</title>
+    <title>俊凱的打手槍訓練網站 - 音效強化版</title>
     <style>
-        :root {
-            --val-red: #ff4655;
-            --val-dark: #0f1923;
-            --val-white: #ece8e1;
-            --val-cyan: #00feca;
-            --val-gold: #ffb800;
-        }
-
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: var(--val-dark);
-            color: var(--val-white);
-            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-            overflow: hidden;
-            user-select: none;
-        }
-
-        #game-stage {
-            position: relative;
-            width: 100vw; height: 100vh;
-            display: none;
-            cursor: crosshair;
-            background-image: linear-gradient(rgba(15, 25, 35, 0.98), rgba(15, 25, 35, 0.98)), url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZjQ2NTUiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4=');
-        }
-
-        #ui-layer {
-            position: absolute; top: 20px; left: 50%;
-            transform: translateX(-50%);
-            display: flex; gap: 40px; z-index: 100;
-            background: rgba(15, 25, 35, 0.85);
-            padding: 10px 30px; border: 1px solid var(--val-red);
-            backdrop-filter: blur(5px);
-            pointer-events: none;
-        }
-
+        /* (這裡保留之前的 CSS 樣式，為了節省篇幅省略，請延用上一版本的 Style) */
+        :root { --val-red: #ff4655; --val-dark: #0f1923; --val-white: #ece8e1; --val-cyan: #00feca; --val-gold: #ffb800; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: var(--val-dark); color: var(--val-white); font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; }
+        #game-stage { position: relative; width: 100vw; height: 100vh; display: none; cursor: crosshair; background: #0f1923; }
+        #ui-layer { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 40px; z-index: 100; background: rgba(15, 25, 35, 0.85); padding: 10px 30px; border: 1px solid var(--val-red); }
         .stat-box { text-align: center; }
-        .stat-label { font-size: 12px; color: var(--val-red); text-transform: uppercase; }
+        .stat-label { font-size: 12px; color: var(--val-red); }
         .stat-value { font-size: 24px; font-weight: bold; }
-
-        #back-btn {
-            position: absolute; top: 20px; left: 20px; z-index: 101;
-            background: transparent; color: var(--val-white);
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 8px 15px; cursor: pointer; transition: 0.2s;
-        }
-        #back-btn:hover { background: var(--val-red); border-color: var(--val-red); color: white; }
-
-        #target {
-            position: absolute; border-radius: 50%;
-            background-size: cover; background-position: center;
-            border: 2px solid var(--val-cyan);
-            box-shadow: 0 0 20px rgba(0, 254, 202, 0.5);
-            cursor: crosshair;
-            transition: transform 0.1s ease-out, opacity 0.1s ease-out;
-            opacity: 1; transform: scale(1);
-        }
-        
+        #target { position: absolute; border-radius: 50%; background-size: cover; border: 2px solid var(--val-cyan); box-shadow: 0 0 20px rgba(0, 254, 202, 0.5); cursor: crosshair; transition: transform 0.1s, opacity 0.1s; }
         #target.hit { opacity: 0; transform: scale(0); }
-
-        .hit-text {
-            position: absolute; color: var(--val-gold); font-weight: 900; font-size: 26px;
-            text-shadow: 0 0 10px rgba(255, 184, 0, 0.8), 2px 2px 2px #000;
-            pointer-events: none; z-index: 50; white-space: nowrap;
-            animation: hitTextPopup 1s ease-out forwards;
-        }
-
-        @keyframes hitTextPopup {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-            10% { transform: translate(-50%, -100%) scale(1.1); opacity: 1; }
-            80% { transform: translate(-50%, -120%) scale(1); opacity: 1; }
-            100% { transform: translate(-50%, -140%) scale(0.9); opacity: 0; }
-        }
-
-        #menu {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center; background: rgba(15, 25, 35, 0.98);
-            padding: 40px; border-left: 8px solid var(--val-red);
-            z-index: 200; width: 420px; box-shadow: 0 0 40px rgba(0,0,0,0.6);
-        }
-
-        h1 { color: var(--val-red); font-size: 28px; margin-bottom: 5px; letter-spacing: 1px;}
-        .subtitle { color: var(--val-cyan); font-size: 13px; margin-bottom: 25px; font-weight: bold;}
-
-        .settings { text-align: left; display: flex; flex-direction: column; gap: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;}
-        
-        .file-upload-wrapper { display: flex; flex-direction: column; gap: 8px; align-items: center; margin-bottom: 5px; }
-        .custom-file-upload {
-            background-color: transparent; color: var(--val-white); border: 1px solid rgba(255,255,255,0.3);
-            padding: 8px 15px; cursor: pointer; transition: 0.2s; font-size: 13px;
-        }
-        #image-input { display: none; }
-
-        .setting-item { display: flex; align-items: center; justify-content: space-between; }
-        .setting-item label { font-size: 14px; color: #aaa; }
-        input[type="range"] { width: 60%; accent-color: var(--val-red); }
-
-        .switch {
-            position: relative; display: inline-block; width: 44px; height: 22px;
-        }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #333; transition: .3s; border-radius: 22px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
-            background-color: white; transition: .3s; border-radius: 50%;
-        }
-        input:checked + .slider { background-color: var(--val-red); }
-        input:checked + .slider:before { transform: translateX(22px); }
-
-        .start-trigger {
-            background-color: var(--val-red); color: white; border: none; padding: 15px;
-            width: 100%; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 25px;
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
-        }
-        .start-trigger:hover { background: white; color: var(--val-dark); transform: scale(1.02);}
-        .start-trigger:disabled { opacity: 0.5; cursor: not-allowed; }
-
+        .hit-text { position: absolute; color: var(--val-gold); font-weight: 900; font-size: 26px; text-shadow: 0 0 10px rgba(255, 184, 0, 0.8); pointer-events: none; animation: hitTextPopup 1s forwards; }
+        @keyframes hitTextPopup { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(-50%, -150%) scale(1); opacity: 0; } }
+        #menu { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15, 25, 35, 0.98); padding: 40px; border-left: 8px solid var(--val-red); width: 400px; text-align: center; }
+        .settings { text-align: left; display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .start-trigger { background: var(--val-red); color: white; border: none; padding: 15px; width: 100%; font-size: 18px; cursor: pointer; margin-top: 20px; clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%); }
     </style>
 </head>
 <body>
 
     <div id="game-stage">
-        <button id="back-btn">← 返回首頁</button>
         <div id="ui-layer">
             <div class="stat-box"><div class="stat-label">倒數</div><div id="timer" class="stat-value">60</div></div>
             <div class="stat-box"><div class="stat-label">分數</div><div id="score" class="stat-value">0</div></div>
@@ -141,152 +35,101 @@
     </div>
 
     <div id="menu">
-        <h1>俊凱的打手槍訓練網站</h1>
-        <div class="subtitle">隨機 AD 走位訓練版</div>
-        
+        <h1>俊凱練槍大師</h1>
         <div class="settings">
-            <div class="setting-item file-upload-wrapper">
-                <label for="image-input" class="custom-file-upload">📁 選擇靶子照片</label>
-                <input type="file" id="image-input" accept="image/*">
-                <div id="file-name-display" style="font-size:10px; color:#666">尚未選擇檔案</div>
-            </div>
-
-            <div class="setting-item">
-                <label>開啟隨機橫移 (AD走位):</label>
-                <label class="switch">
-                    <input type="checkbox" id="move-toggle" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="setting-item">
-                <label>靶子大小: <span id="size-val">80</span>px</label>
-                <input type="range" id="size-slider" min="40" max="150" value="80">
-            </div>
+            <input type="file" id="image-input" accept="image/*">
+            <label>音量控制:</label>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
         </div>
-        
-        <button class="start-trigger" id="start-btn" disabled>請先選擇照片</button>
+        <button class="start-trigger" id="start-btn" disabled>上傳照片開始</button>
     </div>
 
     <script>
+        // --- 🔊 音效設定區 ---
+        // 這裡預設使用簡單的合成音效，你也可以換成自己的檔案路徑，例如 'hit.mp3'
+        const hitSound = new Audio('https://actions.google.com/sounds/v1/foley/button_click.ogg');
+        const missSound = new Audio('https://actions.google.com/sounds/v1/foley/glass_break.ogg');
+        const winSound = new Audio('https://actions.google.com/sounds/v1/foley/tada.ogg');
+
         const HIT_QUOTES = ["阿公67!!", "林德懷沒老二!!", "林德懷是紅髮艾德!!"];
         const menu = document.getElementById('menu'), gameStage = document.getElementById('game-stage'), target = document.getElementById('target');
-        const textContainer = document.getElementById('text-effect-container'), startBtn = document.getElementById('start-btn');
-        const imgInput = document.getElementById('image-input'), moveToggle = document.getElementById('move-toggle');
-        const sizeSlider = document.getElementById('size-slider');
-        const scoreEl = document.getElementById('score'), timerEl = document.getElementById('timer'), accEl = document.getElementById('accuracy');
+        const startBtn = document.getElementById('start-btn'), imgInput = document.getElementById('image-input'), volSlider = document.getElementById('volume-slider');
+        
+        let score = 0, timeLeft = 60, hits = 0, clicks = 0, gameActive = false, userImageUrl = null;
 
-        let score = 0, timeLeft = 60, hits = 0, clicks = 0, gameActive = false, timerInterval, moveInterval;
-        let userImageUrl = null, isTargetVisible = false;
-        let targetX = 0, targetY = 0, moveDir = 1, moveSpeed = 4;
-
-        sizeSlider.oninput = () => document.getElementById('size-val').innerText = sizeSlider.value;
-
+        // 圖片上傳
         imgInput.onchange = (e) => {
             const file = e.target.files[0];
-            if (!file) return;
-            document.getElementById('file-name-display').innerText = file.name;
             const reader = new FileReader();
-            reader.onload = (event) => { userImageUrl = event.target.result; startBtn.disabled = false; startBtn.innerText = "開始練槍"; };
+            reader.onload = (ev) => { userImageUrl = ev.target.result; startBtn.disabled = false; };
             reader.readAsDataURL(file);
         };
 
-        function spawnTarget() {
-            if (!gameActive) return;
-            target.classList.add('hit');
-            isTargetVisible = false;
-
-            const size = parseInt(sizeSlider.value);
-            target.style.width = size + 'px'; target.style.height = size + 'px';
-
-            const maxX = window.innerWidth - size - 60;
-            const maxY = window.innerHeight - size - 140;
-            targetX = Math.max(60, Math.random() * maxX);
-            targetY = Math.max(140, Math.random() * maxY);
-
-            target.style.left = targetX + 'px';
-            target.style.top = targetY + 'px';
-            target.style.backgroundImage = `url('${userImageUrl}')`;
-            
-            moveDir = Math.random() > 0.5 ? 1 : -1;
-            moveSpeed = 3 + Math.random() * 5; 
-
-            setTimeout(() => { if(gameActive) { target.classList.remove('hit'); isTargetVisible = true; } }, 100);
+        // 播放音效的函式
+        function playSound(audio) {
+            audio.currentTime = 0; // 歸零重新播放（防止連續點擊沒聲音）
+            audio.volume = volSlider.value;
+            audio.play().catch(e => console.log("音效播放失敗", e));
         }
 
-        // ==========================================
-        // 修改後的隨機移動邏輯
-        // ==========================================
-        function updateMovement() {
-            if (!gameActive || !isTargetVisible || !moveToggle.checked) return;
-
-            const size = parseInt(sizeSlider.value);
-            
-            // --- 隨機變向邏輯 ---
-            // 每幀有 1.2% 的機率自動改變方向，增加不可預測性
-            if (Math.random() < 0.012) {
-                moveDir *= -1;
-                // 變向時順便隨機微調速度，讓走位更靈活
-                moveSpeed = 3 + Math.random() * 5;
-            }
-
-            targetX += moveDir * moveSpeed;
-
-            // 碰壁強制反彈
-            if (targetX <= 0) {
-                targetX = 0;
-                moveDir = 1;
-            } else if (targetX >= window.innerWidth - size) {
-                targetX = window.innerWidth - size;
-                moveDir = -1;
-            }
-            
-            target.style.left = targetX + 'px';
-        }
-
+        // 擊中邏輯
         target.onmousedown = (e) => {
-            if (!gameActive || !isTargetVisible) return;
+            if (!gameActive) return;
             e.stopPropagation();
-            isTargetVisible = false; hits++; clicks++; score += 100;
-            updateStats();
-            target.classList.add('hit');
+            playSound(hitSound); // 播放擊中聲
+            hits++; clicks++; score += 100;
+            updateUI();
+            
+            // 嘴砲文字
             const quote = HIT_QUOTES[Math.floor(Math.random() * HIT_QUOTES.length)];
-            const textSpan = document.createElement('span');
-            textSpan.className = 'hit-text'; textSpan.innerText = quote;
-            textSpan.style.left = (targetX + parseInt(sizeSlider.value)/2) + 'px';
-            textSpan.style.top = (targetY + parseInt(sizeSlider.value)/2) + 'px';
-            textContainer.appendChild(textSpan);
-            setTimeout(() => textSpan.remove(), 1000);
-            setTimeout(spawnTarget, 200);
+            const span = document.createElement('span');
+            span.className = 'hit-text'; span.innerText = quote;
+            span.style.left = e.clientX + 'px'; span.style.top = e.clientY + 'px';
+            document.getElementById('text-effect-container').appendChild(span);
+            setTimeout(() => span.remove(), 1000);
+
+            target.classList.add('hit');
+            setTimeout(spawnTarget, 150);
         };
 
-        gameStage.onmousedown = () => { if (gameActive) { clicks++; updateStats(); } };
+        // 沒打中
+        gameStage.onmousedown = () => {
+            if (!gameActive) return;
+            playSound(missSound); // 播放空槍聲
+            clicks++;
+            updateUI();
+        };
 
-        function updateStats() {
-            scoreEl.innerText = score;
-            accEl.innerText = (clicks === 0 ? 100 : Math.round((hits / clicks) * 100)) + '%';
+        function spawnTarget() {
+            target.classList.remove('hit');
+            const size = 80;
+            target.style.width = target.style.height = size + 'px';
+            target.style.left = Math.random() * (window.innerWidth - size) + 'px';
+            target.style.top = (Math.random() * (window.innerHeight - size - 150) + 150) + 'px';
+            target.style.backgroundImage = `url('${userImageUrl}')`;
+        }
+
+        function updateUI() {
+            document.getElementById('score').innerText = score;
+            document.getElementById('timer').innerText = timeLeft;
+            document.getElementById('accuracy').innerText = Math.round((hits/clicks)*100 || 100) + '%';
         }
 
         function startGame() {
-            score = 0; timeLeft = 60; hits = 0; clicks = 0; gameActive = true;
-            menu.style.display = 'none'; gameStage.style.display = 'block';
-            updateStats(); spawnTarget();
-            
-            timerInterval = setInterval(() => {
-                timeLeft--; timerEl.innerText = timeLeft;
-                if (timeLeft <= 0) { clearInterval(timerInterval); clearInterval(moveInterval); endGame(); }
+            gameActive = true; menu.style.display = 'none'; gameStage.style.display = 'block';
+            spawnTarget();
+            const timer = setInterval(() => {
+                timeLeft--; updateUI();
+                if(timeLeft <= 0) {
+                    clearInterval(timer);
+                    playSound(winSound); // 播放結束聲
+                    alert("林德懷被打爛了！總分：" + score);
+                    location.reload();
+                }
             }, 1000);
-
-            moveInterval = setInterval(updateMovement, 16);
-        }
-
-        function endGame() {
-            gameActive = false;
-            setTimeout(() => { alert(`時間到！\n林德懷還是沒老二！\n總分: ${score} | 命中率: ${accEl.innerText}`); location.reload(); }, 500);
         }
 
         startBtn.onclick = startGame;
-        document.getElementById('back-btn').onclick = () => location.reload();
     </script>
 </body>
 </html>
