@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>俊凱的打手槍訓練網站 - 自由位置版</title>
+    <title>俊凱的打手槍訓練網站 - 使用者自定義版</title>
     <style>
         :root {
             --val-red: #ff4655;
@@ -28,6 +28,9 @@
             height: 100vh;
             display: none; /* 預設隱藏 */
             cursor: crosshair;
+            background-image: 
+                linear-gradient(rgba(15, 25, 35, 0.95), rgba(15, 25, 35, 0.95)),
+                url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZjQ2NTUiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4=');
         }
 
         /* UI 上層資訊 */
@@ -42,6 +45,8 @@
             background: rgba(15, 25, 35, 0.8);
             padding: 10px 30px;
             border: 1px solid var(--val-red);
+            backdrop-filter: blur(5px);
+            pointer-events: none; /* UI不阻擋點擊 */
         }
 
         .stat-box { text-align: center; }
@@ -59,10 +64,11 @@
             border: 1px solid rgba(255,255,255,0.3);
             padding: 8px 15px;
             cursor: pointer;
+            transition: 0.2s;
         }
-        #back-btn:hover { background: var(--val-red); border-color: var(--val-red); }
+        #back-btn:hover { background: var(--val-red); border-color: var(--val-red); color: white; }
 
-        /* 靶子（核心改動：使用 div + img 避免 CORS） */
+        /* 靶子 */
         #target {
             position: absolute;
             border-radius: 50%;
@@ -71,9 +77,9 @@
             border: 2px solid var(--val-cyan);
             box-shadow: 0 0 15px var(--val-cyan);
             cursor: crosshair;
-            transition: transform 0.1s;
+            transition: transform 0.05s;
         }
-        #target:active { transform: scale(0.9); }
+        #target:active { transform: scale(0.92); }
 
         /* 選單介面 */
         #menu {
@@ -81,31 +87,67 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            background: rgba(15, 25, 35, 0.95);
-            padding: 40px;
+            background: rgba(15, 25, 35, 0.98);
+            padding: 50px;
             border-left: 8px solid var(--val-red);
             z-index: 200;
-            width: 380px;
+            width: 400px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
 
-        h1 { color: var(--val-red); font-size: 32px; margin-bottom: 5px; }
-        .subtitle { color: var(--val-cyan); font-size: 14px; margin-bottom: 25px; }
+        h1 { color: var(--val-red); font-size: 32px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+        .subtitle { color: var(--val-cyan); font-size: 14px; margin-bottom: 30px; }
 
-        .settings { text-align: left; display: flex; flex-direction: column; gap: 15px; }
-        input[type="text"], input[type="range"] { width: 100%; box-sizing: border-box; }
-        input[type="text"] {
-            background: #1f2933; border: 1px solid var(--val-red);
-            color: white; padding: 10px; outline: none;
+        .settings { text-align: left; display: flex; flex-direction: column; gap: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;}
+        
+        /* 自定義檔案上傳按鈕樣式 */
+        .file-upload-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
         }
+        
+        #file-name-display {
+            font-size: 12px;
+            color: #aaa;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .custom-file-upload {
+            background-color: transparent;
+            color: var(--val-white);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+            display: inline-block;
+        }
+        .custom-file-upload:hover {
+            border-color: var(--val-white);
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        #image-input { display: none; } /* 隱藏原本的 input */
+
+        .setting-item label { display: block; font-size: 14px; color: #aaa; margin-bottom: 8px; }
+        input[type="range"] { width: 100%; box-sizing: border-box; accent-color: var(--val-red); cursor: pointer;}
 
         .start-trigger {
             background-color: var(--val-red);
-            color: white; border: none; padding: 15px;
+            color: white; border: none; padding: 18px;
             width: 100%; font-size: 20px; font-weight: bold;
-            cursor: pointer; margin-top: 25px;
+            cursor: pointer; margin-top: 35px;
             clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
+            transition: 0.2s;
         }
-        .start-trigger:hover { background: white; color: var(--val-dark); }
+        .start-trigger:hover { background: white; color: var(--val-dark); transform: scale(1.03);}
+        .start-trigger:disabled { background-color: #555; cursor: not-allowed; clip-path: none;}
 
     </style>
 </head>
@@ -125,21 +167,29 @@
 
     <div id="menu">
         <h1>俊凱的打手槍訓練網站</h1>
-        <div class="subtitle">自定義照片網址 & 全螢幕練習</div>
+        <div class="subtitle">使用者自定義照片 & 全螢幕練習</div>
         
         <div class="settings">
-            <div class="setting-item">
-                <label>照片網址 (貼上連結):</label>
-                <input type="text" id="img-url" placeholder="http://..." value="">
+            <div class="setting-item file-upload-wrapper">
+                <label for="image-input" class="custom-file-upload">
+                    📁 選擇你的靶子照片 (PNG/JPG)
+                </label>
+                <input type="file" id="image-input" accept="image/png, image/jpeg">
+                <div id="file-name-display">尚未選擇檔案</div>
             </div>
 
             <div class="setting-item">
-                <label>靶子大小: <span id="size-val">60</span> px</label>
+                <label>滑鼠靈敏度 (Sensitivity): <span id="sens-val">1.0</span></label>
+                <input type="range" id="sens-slider" min="0.1" max="5.0" step="0.1" value="1.0">
+            </div>
+            
+            <div class="setting-item">
+                <label>靶子照片大小: <span id="size-val">60</span> px</label>
                 <input type="range" id="size-slider" min="30" max="150" step="1" value="60">
             </div>
         </div>
         
-        <button class="start-trigger" id="start-btn">開始練槍</button>
+        <button class="start-trigger" id="start-btn" disabled>請先選擇照片</button>
     </div>
 
     <script>
@@ -148,7 +198,9 @@
         const target = document.getElementById('target');
         const startBtn = document.getElementById('start-btn');
         const backBtn = document.getElementById('back-btn');
-        const imgInput = document.getElementById('img-url');
+        const imgInput = document.getElementById('image-input');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const sensSlider = document.getElementById('sens-slider');
         const sizeSlider = document.getElementById('size-slider');
         
         const scoreEl = document.getElementById('score');
@@ -156,9 +208,40 @@
         const accEl = document.getElementById('accuracy');
 
         let score = 0, timeLeft = 60, hits = 0, clicks = 0, gameActive = false, timerInterval;
+        let userImageUrl = null; // 儲存使用者上傳圖片的 Base64 連結
 
-        // 更新大小數值顯示
+        // 更新靈敏度與大小數值顯示
+        sensSlider.oninput = () => document.getElementById('sens-val').innerText = sensSlider.value;
         sizeSlider.oninput = () => document.getElementById('size-val').innerText = sizeSlider.value;
+
+        // ==========================================
+        // 核心功能：處理使用者上傳檔案
+        // ==========================================
+        imgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // 檢查檔案類型
+            if (!file.type.match('image.*')) {
+                alert("請上傳圖片檔案 (PNG 或 JPG)！");
+                imgInput.value = '';
+                return;
+            }
+
+            // 顯示檔名
+            fileNameDisplay.innerText = file.name;
+
+            // 讀取檔案並轉換為 Base64 URL
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                userImageUrl = event.target.result; // 這就是圖片的 Base64 資料
+                // 啟用開始按鈕
+                startBtn.disabled = false;
+                startBtn.innerText = "開始練槍";
+                startBtn.style.clipPath = "polygon(5% 0, 100% 0, 95% 100%, 0 100%)";
+            };
+            reader.readAsDataURL(file);
+        });
 
         // 返回首頁功能
         function returnToHome() {
@@ -177,26 +260,19 @@
 
             // 隨機計算 X 和 Y，避開邊緣
             const maxX = window.innerWidth - size - 50;
-            const maxY = window.innerHeight - size - 100;
+            const maxY = window.innerHeight - size - 120;
             const randomX = Math.max(50, Math.random() * maxX);
-            const randomY = Math.max(100, Math.random() * maxY);
+            const randomY = Math.max(120, Math.random() * maxY); // 預留 UI 空間
 
             target.style.left = randomX + 'px';
             target.style.top = randomY + 'px';
 
-            // 設定照片
-            if (imgInput.value.trim() !== "") {
-                target.style.backgroundImage = `url('${imgInput.value}')`;
-                target.style.backgroundColor = "transparent";
-                target.innerText = "";
+            // 設定使用者上傳的照片
+            if (userImageUrl) {
+                target.style.backgroundImage = `url('${userImageUrl}')`;
             } else {
-                target.style.backgroundImage = "none";
+                // 備案（理論上不會發生）
                 target.style.backgroundColor = "#ff4655";
-                target.innerText = "🎯";
-                target.style.display = "flex";
-                target.style.alignItems = "center";
-                target.style.justifyContent = "center";
-                target.style.fontSize = (size/2) + "px";
             }
         }
 
@@ -225,6 +301,10 @@
         }
 
         function startGame() {
+            if (!userImageUrl) {
+                alert("請先上傳一張照片當作靶子！");
+                return;
+            }
             score = 0; timeLeft = 60; hits = 0; clicks = 0;
             gameActive = true;
             menu.style.display = 'none';
@@ -255,5 +335,7 @@
         // 視窗大小改變時重新定位，防止靶子跑出去
         window.onresize = () => { if(gameActive) spawnTarget(); };
     </script>
+</body>
+</html>
 </body>
 </html>
