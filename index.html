@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>俊凱的打手槍訓練網站 - 左右橫移版</title>
+    <title>俊凱的打手槍訓練網站 - 隨機走位版</title>
     <style>
         :root {
             --val-red: #ff4655;
@@ -78,7 +78,6 @@
             100% { transform: translate(-50%, -140%) scale(0.9); opacity: 0; }
         }
 
-        /* 選單樣式 */
         #menu {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
@@ -103,7 +102,6 @@
         .setting-item label { font-size: 14px; color: #aaa; }
         input[type="range"] { width: 60%; accent-color: var(--val-red); }
 
-        /* 切換開關樣式 */
         .switch {
             position: relative; display: inline-block; width: 44px; height: 22px;
         }
@@ -144,7 +142,7 @@
 
     <div id="menu">
         <h1>俊凱的打手槍訓練網站</h1>
-        <div class="subtitle">左右橫移訓練版</div>
+        <div class="subtitle">隨機 AD 走位訓練版</div>
         
         <div class="settings">
             <div class="setting-item file-upload-wrapper">
@@ -154,9 +152,9 @@
             </div>
 
             <div class="setting-item">
-                <label>開啟左右移動 (AD走位):</label>
+                <label>開啟隨機橫移 (AD走位):</label>
                 <label class="switch">
-                    <input type="checkbox" id="move-toggle">
+                    <input type="checkbox" id="move-toggle" checked>
                     <span class="slider"></span>
                 </label>
             </div>
@@ -210,23 +208,37 @@
             target.style.top = targetY + 'px';
             target.style.backgroundImage = `url('${userImageUrl}')`;
             
-            // 隨機初始移動方向
             moveDir = Math.random() > 0.5 ? 1 : -1;
-            moveSpeed = 3 + Math.random() * 4; // 隨機移動速度
+            moveSpeed = 3 + Math.random() * 5; 
 
             setTimeout(() => { if(gameActive) { target.classList.remove('hit'); isTargetVisible = true; } }, 100);
         }
 
-        // 左右移動的核心邏輯
+        // ==========================================
+        // 修改後的隨機移動邏輯
+        // ==========================================
         function updateMovement() {
             if (!gameActive || !isTargetVisible || !moveToggle.checked) return;
 
             const size = parseInt(sizeSlider.value);
+            
+            // --- 隨機變向邏輯 ---
+            // 每幀有 1.2% 的機率自動改變方向，增加不可預測性
+            if (Math.random() < 0.012) {
+                moveDir *= -1;
+                // 變向時順便隨機微調速度，讓走位更靈活
+                moveSpeed = 3 + Math.random() * 5;
+            }
+
             targetX += moveDir * moveSpeed;
 
-            // 碰壁反彈
-            if (targetX <= 0 || targetX >= window.innerWidth - size) {
-                moveDir *= -1;
+            // 碰壁強制反彈
+            if (targetX <= 0) {
+                targetX = 0;
+                moveDir = 1;
+            } else if (targetX >= window.innerWidth - size) {
+                targetX = window.innerWidth - size;
+                moveDir = -1;
             }
             
             target.style.left = targetX + 'px';
@@ -265,13 +277,12 @@
                 if (timeLeft <= 0) { clearInterval(timerInterval); clearInterval(moveInterval); endGame(); }
             }, 1000);
 
-            // 啟動移動循環 (60FPS)
             moveInterval = setInterval(updateMovement, 16);
         }
 
         function endGame() {
             gameActive = false;
-            setTimeout(() => { alert(`時間到！\n俊凱，總分: ${score}\n命中率: ${accEl.innerText}`); location.reload(); }, 500);
+            setTimeout(() => { alert(`時間到！\n林德懷還是沒老二！\n總分: ${score} | 命中率: ${accEl.innerText}`); location.reload(); }, 500);
         }
 
         startBtn.onclick = startGame;
