@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>俊凱的打手槍訓練網站 - 使用者自定義版</title>
+    <title>俊凱的打手槍訓練網站 - 嘴砲爆頭版</title>
     <style>
         :root {
             --val-red: #ff4655;
             --val-dark: #0f1923;
             --val-white: #ece8e1;
             --val-cyan: #00feca;
+            --val-gold: #ffb800; /* 爆頭金色 */
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: var(--val-dark);
             color: var(--val-white);
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
             overflow: hidden;
             user-select: none;
         }
@@ -29,7 +30,7 @@
             display: none; /* 預設隱藏 */
             cursor: crosshair;
             background-image: 
-                linear-gradient(rgba(15, 25, 35, 0.95), rgba(15, 25, 35, 0.95)),
+                linear-gradient(rgba(15, 25, 35, 0.98), rgba(15, 25, 35, 0.98)),
                 url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZjQ2NTUiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4=');
         }
 
@@ -42,11 +43,11 @@
             display: flex;
             gap: 40px;
             z-index: 100;
-            background: rgba(15, 25, 35, 0.8);
+            background: rgba(15, 25, 35, 0.85);
             padding: 10px 30px;
             border: 1px solid var(--val-red);
             backdrop-filter: blur(5px);
-            pointer-events: none; /* UI不阻擋點擊 */
+            pointer-events: none;
         }
 
         .stat-box { text-align: center; }
@@ -75,11 +76,40 @@
             background-size: cover;
             background-position: center;
             border: 2px solid var(--val-cyan);
-            box-shadow: 0 0 15px var(--val-cyan);
+            box-shadow: 0 0 20px rgba(0, 254, 202, 0.5);
             cursor: crosshair;
-            transition: transform 0.05s;
+            /* 擊中時的縮小動畫 */
+            transition: transform 0.1s ease-out, opacity 0.1s ease-out; 
+            opacity: 1;
+            transform: scale(1);
         }
-        #target:active { transform: scale(0.92); }
+        
+        /* 靶子消失時的樣式 */
+        #target.hit {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        /* 爆頭台詞文字 */
+        .hit-text {
+            position: absolute;
+            color: var(--val-gold);
+            font-weight: 900;
+            font-size: 24px;
+            text-shadow: 0 0 10px rgba(255, 184, 0, 0.8), 2px 2px 2px #000;
+            pointer-events: none; /* 文字不阻擋點擊 */
+            z-index: 50;
+            white-space: nowrap;
+            /* 彈出動畫 */
+            animation: hitTextPopup 1s ease-out forwards;
+        }
+
+        @keyframes hitTextPopup {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            10% { transform: translate(-50%, -100%) scale(1.1); opacity: 1; }
+            80% { transform: translate(-50%, -120%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -140%) scale(0.9); opacity: 0; }
+        }
 
         /* 選單介面 */
         #menu {
@@ -91,63 +121,35 @@
             padding: 50px;
             border-left: 8px solid var(--val-red);
             z-index: 200;
-            width: 400px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            width: 420px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
         }
 
         h1 { color: var(--val-red); font-size: 32px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
-        .subtitle { color: var(--val-cyan); font-size: 14px; margin-bottom: 30px; }
+        .subtitle { color: var(--val-cyan); font-size: 14px; margin-bottom: 30px; font-weight: bold;}
 
         .settings { text-align: left; display: flex; flex-direction: column; gap: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;}
         
-        /* 自定義檔案上傳按鈕樣式 */
-        .file-upload-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        #file-name-display {
-            font-size: 12px;
-            color: #aaa;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
+        /* 檔案上傳樣式 */
+        .file-upload-wrapper { display: flex; flex-direction: column; gap: 10px; align-items: center; margin-bottom: 10px; }
+        #file-name-display { font-size: 12px; color: #aaa; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .custom-file-upload {
-            background-color: transparent;
-            color: var(--val-white);
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 14px;
-            display: inline-block;
+            background-color: transparent; color: var(--val-white); border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 20px; cursor: pointer; transition: 0.2s; font-size: 14px; display: inline-block;
         }
-        .custom-file-upload:hover {
-            border-color: var(--val-white);
-            background-color: rgba(255,255,255,0.05);
-        }
-
-        #image-input { display: none; } /* 隱藏原本的 input */
+        .custom-file-upload:hover { border-color: var(--val-white); background-color: rgba(255,255,255,0.05); }
+        #image-input { display: none; }
 
         .setting-item label { display: block; font-size: 14px; color: #aaa; margin-bottom: 8px; }
         input[type="range"] { width: 100%; box-sizing: border-box; accent-color: var(--val-red); cursor: pointer;}
 
         .start-trigger {
-            background-color: var(--val-red);
-            color: white; border: none; padding: 18px;
-            width: 100%; font-size: 20px; font-weight: bold;
-            cursor: pointer; margin-top: 35px;
-            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
-            transition: 0.2s;
+            background-color: var(--val-red); color: white; border: none; padding: 18px;
+            width: 100%; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 35px;
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%); transition: 0.2s;
         }
         .start-trigger:hover { background: white; color: var(--val-dark); transform: scale(1.03);}
-        .start-trigger:disabled { background-color: #555; cursor: not-allowed; clip-path: none;}
+        .start-trigger:disabled { background-color: #555; cursor: not-allowed; clip-path: none; opacity: 0.5;}
 
     </style>
 </head>
@@ -163,16 +165,18 @@
         </div>
 
         <div id="target"></div>
+        
+        <div id="text-effect-container"></div>
     </div>
 
     <div id="menu">
         <h1>俊凱的打手槍訓練網站</h1>
-        <div class="subtitle">使用者自定義照片 & 全螢幕練習</div>
+        <div class="subtitle">嘴砲爆頭版：全螢幕自由練習</div>
         
         <div class="settings">
             <div class="setting-item file-upload-wrapper">
                 <label for="image-input" class="custom-file-upload">
-                    📁 選擇你的靶子照片 (PNG/JPG)
+                    📁 選擇靶子照片 (PNG/JPG)
                 </label>
                 <input type="file" id="image-input" accept="image/png, image/jpeg">
                 <div id="file-name-display">尚未選擇檔案</div>
@@ -184,8 +188,8 @@
             </div>
             
             <div class="setting-item">
-                <label>靶子照片大小: <span id="size-val">60</span> px</label>
-                <input type="range" id="size-slider" min="30" max="150" step="1" value="60">
+                <label>靶子照片大小: <span id="size-val">80</span> px</label>
+                <input type="range" id="size-slider" min="40" max="200" step="1" value="80">
             </div>
         </div>
         
@@ -193,9 +197,19 @@
     </div>
 
     <script>
+        // ==========================================
+        // 核心設定：林德懷系列台詞
+        // ==========================================
+        const HIT_QUOTES = [
+            "阿公67!!",
+            "林德懷沒老二!!",
+            "林德懷是紅髮艾德!!"
+        ];
+
         const menu = document.getElementById('menu');
         const gameStage = document.getElementById('game-stage');
         const target = document.getElementById('target');
+        const textContainer = document.getElementById('text-effect-container');
         const startBtn = document.getElementById('start-btn');
         const backBtn = document.getElementById('back-btn');
         const imgInput = document.getElementById('image-input');
@@ -208,83 +222,121 @@
         const accEl = document.getElementById('accuracy');
 
         let score = 0, timeLeft = 60, hits = 0, clicks = 0, gameActive = false, timerInterval;
-        let userImageUrl = null; // 儲存使用者上傳圖片的 Base64 連結
+        let userImageUrl = null; 
+        let isTargetVisible = false; // 紀錄靶子是否處於可被擊中狀態
 
-        // 更新靈敏度與大小數值顯示
+        // 更新數值顯示
         sensSlider.oninput = () => document.getElementById('sens-val').innerText = sensSlider.value;
         sizeSlider.oninput = () => document.getElementById('size-val').innerText = sizeSlider.value;
 
-        // ==========================================
-        // 核心功能：處理使用者上傳檔案
-        // ==========================================
+        // 處理使用者上傳檔案
         imgInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
-
-            // 檢查檔案類型
-            if (!file.type.match('image.*')) {
-                alert("請上傳圖片檔案 (PNG 或 JPG)！");
-                imgInput.value = '';
-                return;
-            }
-
-            // 顯示檔名
+            if (!file.type.match('image.*')) { alert("請上傳圖片檔案！"); imgInput.value = ''; return; }
             fileNameDisplay.innerText = file.name;
-
-            // 讀取檔案並轉換為 Base64 URL
             const reader = new FileReader();
-            reader.onload = function(event) {
-                userImageUrl = event.target.result; // 這就是圖片的 Base64 資料
-                // 啟用開始按鈕
+            reader.onload = (event) => {
+                userImageUrl = event.target.result;
                 startBtn.disabled = false;
                 startBtn.innerText = "開始練槍";
-                startBtn.style.clipPath = "polygon(5% 0, 100% 0, 95% 100%, 0 100%)";
             };
             reader.readAsDataURL(file);
         });
 
-        // 返回首頁功能
+        // 返回首頁
         function returnToHome() {
             gameActive = false;
             clearInterval(timerInterval);
             gameStage.style.display = 'none';
             menu.style.display = 'block';
-            menu.querySelector('h1').innerText = "俊凱的打手槍訓練網站";
+            textContainer.innerHTML = ''; // 清除所有殘留文字
+            target.classList.remove('hit'); // 確保靶子樣式恢復
         }
 
-        // 產生隨機位置 (不只在一條線上)
-        function spawnTarget() {
+        // 產生隨機位置 (準備狀態)
+        function prepareNextTarget() {
+            if (!gameActive) return;
+            
+            // 確保舊的靶子徹底隱藏
+            target.classList.add('hit');
+            isTargetVisible = false;
+
             const size = parseInt(sizeSlider.value);
             target.style.width = size + 'px';
             target.style.height = size + 'px';
 
             // 隨機計算 X 和 Y，避開邊緣
-            const maxX = window.innerWidth - size - 50;
-            const maxY = window.innerHeight - size - 120;
-            const randomX = Math.max(50, Math.random() * maxX);
-            const randomY = Math.max(120, Math.random() * maxY); // 預留 UI 空間
+            const maxX = window.innerWidth - size - 60;
+            const maxY = window.innerHeight - size - 140;
+            const randomX = Math.max(60, Math.random() * maxX);
+            const randomY = Math.max(140, Math.random() * maxY); // 預留 UI 空間
 
             target.style.left = randomX + 'px';
             target.style.top = randomY + 'px';
+            target.style.backgroundImage = `url('${userImageUrl}')`;
 
-            // 設定使用者上傳的照片
-            if (userImageUrl) {
-                target.style.backgroundImage = `url('${userImageUrl}')`;
-            } else {
-                // 備案（理論上不會發生）
-                target.style.backgroundColor = "#ff4655";
-            }
+            // 設定一個微小的延遲（例如 100ms），讓靶子「跳」出來，手感更好
+            setTimeout(() => {
+                if(gameActive) {
+                    target.classList.remove('hit'); // 顯示靶子
+                    isTargetVisible = true;
+                }
+            }, 100);
+        }
+
+        // 彈出嘴砲台詞特效
+        function showHitTextEffect(x, y) {
+            // 隨機挑選一句台詞
+            const quote = HIT_QUOTES[Math.floor(Math.random() * HIT_QUOTES.length)];
+            
+            // 建立文字元素
+            const textSpan = document.createElement('span');
+            textSpan.classList.add('hit-text');
+            textSpan.innerText = quote;
+            
+            // 設定文字彈出的位置（靶子的中心）
+            textSpan.style.left = x + 'px';
+            textSpan.style.top = y + 'px';
+            
+            textContainer.appendChild(textSpan);
+            
+            // 動播結束後自動移除元素，防止消耗記憶體
+            setTimeout(() => {
+                if (textSpan.parentNode === textContainer) {
+                    textContainer.removeChild(textSpan);
+                }
+            }, 1000); // 對應 CSS 動畫時間
         }
 
         // 擊中判定
         target.addEventListener('mousedown', (e) => {
-            if (!gameActive) return;
+            if (!gameActive || !isTargetVisible) return;
             e.stopPropagation(); // 防止觸發背景的點擊
+            
+            isTargetVisible = false; // 瞬間鎖定，防止重複擊中
             hits++;
             clicks++;
-            score += 10;
+            score += 100; // 嘴砲版得分高一點
             updateStats();
-            spawnTarget();
+
+            // 1. 靶子瞬間縮小並消失
+            target.classList.add('hit');
+
+            // 2. 獲取靶子中心位置
+            const targetRect = target.getBoundingClientRect();
+            const centerX = targetRect.left + targetRect.width / 2;
+            const centerY = targetRect.top + targetRect.height / 2;
+
+            // 3. 在中心位置彈出嘴砲文字
+            showHitTextEffect(centerX, centerY);
+
+            // 4. 等文字動畫跑一下，再產生下一個靶子
+            setTimeout(() => {
+                if(gameActive) {
+                    prepareNextTarget();
+                }
+            }, 200); // 靶子消失後 200ms 出現下一個，手感比較連續
         });
 
         // 沒點中背景 (扣命中率)
@@ -301,41 +353,37 @@
         }
 
         function startGame() {
-            if (!userImageUrl) {
-                alert("請先上傳一張照片當作靶子！");
-                return;
-            }
+            if (!userImageUrl) { alert("請先上傳照片！"); return; }
             score = 0; timeLeft = 60; hits = 0; clicks = 0;
             gameActive = true;
             menu.style.display = 'none';
             gameStage.style.display = 'block';
+            textContainer.innerHTML = ''; // 清空殘留特效
             
             updateStats();
-            spawnTarget();
+            prepareNextTarget(); // 產生第一個靶子
 
             timerInterval = setInterval(() => {
                 timeLeft--;
                 timerEl.innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    endGame();
-                }
+                if (timeLeft <= 0) { clearInterval(timerInterval); endGame(); }
             }, 1000);
         }
 
         function endGame() {
             gameActive = false;
-            alert(`時間到！\n俊凱，你的總分是: ${score}\n命中率: ${accEl.innerText}`);
-            returnToHome();
+            // 延遲一下彈出視窗，讓最後一發的特效跑完
+            setTimeout(() => {
+                if(gameStage.style.display === 'block') {
+                    alert(`訓練結束！林德懷也沒老二！\n俊凱，你的總分是: ${score}\n命中率: ${accEl.innerText}`);
+                    returnToHome();
+                }
+            }, 800);
         }
 
         startBtn.onclick = startGame;
         backBtn.onclick = returnToHome;
-
-        // 視窗大小改變時重新定位，防止靶子跑出去
-        window.onresize = () => { if(gameActive) spawnTarget(); };
+        window.onresize = () => { if(gameActive) prepareNextTarget(); };
     </script>
-</body>
-</html>
 </body>
 </html>
