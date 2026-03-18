@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>俊凱的打手槍訓練網站 - 網址自定義版</title>
+    <title>俊凱的打手槍訓練網站 - 自由位置版</title>
     <style>
         :root {
             --val-red: #ff4655;
@@ -12,225 +12,209 @@
             --val-cyan: #00feca;
         }
 
-        body {
-            margin: 0;
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: var(--val-dark);
             color: var(--val-white);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             user-select: none;
         }
 
+        /* 遊戲背景層 */
+        #game-stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: none; /* 預設隱藏 */
+            cursor: crosshair;
+        }
+
+        /* UI 上層資訊 */
         #ui-layer {
             position: absolute;
             top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             gap: 40px;
-            z-index: 10;
+            z-index: 100;
             background: rgba(15, 25, 35, 0.8);
             padding: 10px 30px;
             border: 1px solid var(--val-red);
-            pointer-events: none;
         }
 
         .stat-box { text-align: center; }
         .stat-label { font-size: 12px; color: var(--val-red); text-transform: uppercase; }
         .stat-value { font-size: 24px; font-weight: bold; }
 
-        #game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            cursor: crosshair;
+        /* 返回按鈕 */
+        #back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 101;
+            background: transparent;
+            color: var(--val-white);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 15px;
+            cursor: pointer;
         }
+        #back-btn:hover { background: var(--val-red); border-color: var(--val-red); }
 
-        canvas { display: block; }
+        /* 靶子（核心改動：使用 div + img 避免 CORS） */
+        #target {
+            position: absolute;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--val-cyan);
+            box-shadow: 0 0 15px var(--val-cyan);
+            cursor: crosshair;
+            transition: transform 0.1s;
+        }
+        #target:active { transform: scale(0.9); }
 
+        /* 選單介面 */
         #menu {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
             background: rgba(15, 25, 35, 0.95);
-            padding: 40px 50px;
+            padding: 40px;
             border-left: 8px solid var(--val-red);
-            z-index: 20;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-            width: 350px;
+            z-index: 200;
+            width: 380px;
         }
 
-        h1 { color: var(--val-red); font-size: 28px; margin-bottom: 5px; }
-        .subtitle { color: var(--val-cyan); font-size: 13px; margin-bottom: 20px; }
+        h1 { color: var(--val-red); font-size: 32px; margin-bottom: 5px; }
+        .subtitle { color: var(--val-cyan); font-size: 14px; margin-bottom: 25px; }
 
-        .settings {
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            text-align: left;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 20px;
-        }
-
-        .setting-item { display: flex; flex-direction: column; gap: 5px; }
-        label { font-size: 14px; color: #aaa; }
-
+        .settings { text-align: left; display: flex; flex-direction: column; gap: 15px; }
+        input[type="text"], input[type="range"] { width: 100%; box-sizing: border-box; }
         input[type="text"] {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--val-red);
-            color: white;
-            padding: 8px;
-            outline: none;
-            font-size: 12px;
+            background: #1f2933; border: 1px solid var(--val-red);
+            color: white; padding: 10px; outline: none;
         }
 
-        input[type="range"] { width: 100%; accent-color: var(--val-red); }
-
-        button {
+        .start-trigger {
             background-color: var(--val-red);
-            color: white;
-            border: none;
-            padding: 15px;
-            width: 100%;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 20px;
+            color: white; border: none; padding: 15px;
+            width: 100%; font-size: 20px; font-weight: bold;
+            cursor: pointer; margin-top: 25px;
             clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);
         }
+        .start-trigger:hover { background: white; color: var(--val-dark); }
 
-        button:hover { background-color: var(--val-white); color: var(--val-dark); }
-        
-        #head-line-guide {
-            position: absolute;
-            top: 50%;
-            width: 100%;
-            height: 2px;
-            background: rgba(255, 70, 85, 0.15);
-            pointer-events: none;
-        }
     </style>
 </head>
 <body>
 
-    <div id="ui-layer">
-        <div class="stat-box"><div class="stat-label">倒數</div><div id="timer" class="stat-value">60</div></div>
-        <div class="stat-box"><div class="stat-label">分數</div><div id="score" class="stat-value">0</div></div>
-        <div class="stat-box"><div class="stat-label">命中率</div><div id="accuracy" class="stat-value">100%</div></div>
+    <div id="game-stage">
+        <button id="back-btn">← 返回首頁</button>
+        
+        <div id="ui-layer">
+            <div class="stat-box"><div class="stat-label">倒數</div><div id="timer" class="stat-value">60</div></div>
+            <div class="stat-box"><div class="stat-label">分數</div><div id="score" class="stat-value">0</div></div>
+            <div class="stat-box"><div class="stat-label">命中率</div><div id="accuracy" class="stat-value">100%</div></div>
+        </div>
+
+        <div id="target"></div>
     </div>
 
     <div id="menu">
         <h1>俊凱的打手槍訓練網站</h1>
-        <div class="subtitle">客製化靶子：水平頭線練習</div>
+        <div class="subtitle">自定義照片網址 & 全螢幕練習</div>
         
         <div class="settings">
             <div class="setting-item">
-                <label>目標照片網址 (貼上 URL):</label>
-                <input type="text" id="img-url" placeholder="https://ci3.googleusercontent.com/mail-img-att/AGAZnRrZr2S49npQjtLGVTn7Y7mm76x2D04IC_eHZXE_3TWzxZFFw1EUYqyCOYIykRU-ZwNqLg-qAbfC0fNQeoxs7XNWsH3i-xRcY-8rWoKGXEv5D3GL7niUonoz4Gp-vBfHgOizUMbwm3YOndZE_hzbck1EK7hswWWTyB1tEgwxDrMyQKAlkhFSOCyUQs7nXICdk83q4riGo6vG9uJNQLivsAt1_FL1-fVRO8IAHLuwg5btX_j1KpOz7_NQ5thbB2t9Y1Kpo98H9te0X_DRDIXsknCtDi81kE60IJyUnSH4gLyQNtemWuu38lJv5cpwUgVCd3gx0fzCYZHYlPHOcajKR6zJ03Np5xbjEDSIiNC_jaQM16tTdeMhqazqaTjXJhJMRmPYYcOJhKjE6d1QFEeSN-TWcRH3wBG3N7loKJNYRnzXfLmEcZS6efmaKpW9f2YBTftsYmcL65x2d9XfBUuV9tiAaSSY7V98ntSXNIDYtsu-VckLhpigfYDNH6TTvEa0S9NuXXvf0zg9wRVSpTQKgk0rke6ZkdcXaXLTyknRrUUiFn4_olmUPZvxV7Ng3t08g85i2MVbvS7S5yOlLyVt3bSuPwoCNC9Pddx-J5xNHXchl1KnQ4gOQ_6YbYeZfp3WqqYiz7_jcdurmSCvHAlITPvUefXvLnYxH9aC3gjO-vOhGG6gtrdqUikKtkw5WdW7I58JjavaDaRtGfIk4CWcCTvzGX9lD6GrQxMilXEA24BJBR3s1GRUsF4ZC9M8UF_QaET8rTQuLVVSQK8kp-w09aayuGGIo3_a0NwpM2FP7U2X5mOemw0h-WkPwgI0J1-U6qHurFPtc1pfxvV_E_eMYF5GcFZhtF2hh66MA98IIJfZmArtxRPyeSGYEwuj-eRI5PZlNwtiRh9HVDHPgLAwBPajkYW_EcE7vfuyuZWgU0t5mJzw-9IxEPElq_V3UIZI33YiFMEFjUQqtsH8q-7IJM31TXXfwAydRYnzrWQu844kSTU6tHlJdkSGGYIVu9FjlGGVVbkPLextLxMPl5Mb0v5xopz8xzbG_0WIdBoO5wj0lJk=s0-l75-ft">
+                <label>照片網址 (貼上連結):</label>
+                <input type="text" id="img-url" placeholder="http://..." value="">
             </div>
 
             <div class="setting-item">
-                <label>滑鼠靈敏度: <span id="sens-val">1.0</span></label>
-                <input type="range" id="sens-slider" min="0.1" max="5.0" step="0.1" value="1.0">
-            </div>
-            
-            <div class="setting-item">
-                <label>靶子大小: <span id="size-val">30</span></label>
-                <input type="range" id="size-slider" min="15" max="60" step="1" value="30">
+                <label>靶子大小: <span id="size-val">60</span> px</label>
+                <input type="range" id="size-slider" min="30" max="150" step="1" value="60">
             </div>
         </div>
         
-        <button id="start-btn">開始訓練</button>
-    </div>
-
-    <div id="game-container">
-        <div id="head-line-guide"></div>
-        <canvas id="gameCanvas"></canvas>
+        <button class="start-trigger" id="start-btn">開始練槍</button>
     </div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        const menu = document.getElementById('menu');
+        const gameStage = document.getElementById('game-stage');
+        const target = document.getElementById('target');
+        const startBtn = document.getElementById('start-btn');
+        const backBtn = document.getElementById('back-btn');
+        const imgInput = document.getElementById('img-url');
+        const sizeSlider = document.getElementById('size-slider');
+        
         const scoreEl = document.getElementById('score');
         const timerEl = document.getElementById('timer');
         const accEl = document.getElementById('accuracy');
-        const startBtn = document.getElementById('start-btn');
-        const menu = document.getElementById('menu');
-        const imgInput = document.getElementById('img-url');
-        const sensSlider = document.getElementById('sens-slider');
-        const sizeSlider = document.getElementById('size-slider');
 
-        let score = 0, timeLeft = 60, hits = 0, clicks = 0, gameActive = false;
-        let target = { x: 0, y: 0, radius: 30 };
-        let particles = [];
+        let score = 0, timeLeft = 60, hits = 0, clicks = 0, gameActive = false, timerInterval;
 
-        // 圖片處理邏輯
-        let headImage = new Image();
-        let useImage = false;
+        // 更新大小數值顯示
+        sizeSlider.oninput = () => document.getElementById('size-val').innerText = sizeSlider.value;
 
-        imgInput.addEventListener('change', () => {
+        // 返回首頁功能
+        function returnToHome() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            gameStage.style.display = 'none';
+            menu.style.display = 'block';
+            menu.querySelector('h1').innerText = "俊凱的打手槍訓練網站";
+        }
+
+        // 產生隨機位置 (不只在一條線上)
+        function spawnTarget() {
+            const size = parseInt(sizeSlider.value);
+            target.style.width = size + 'px';
+            target.style.height = size + 'px';
+
+            // 隨機計算 X 和 Y，避開邊緣
+            const maxX = window.innerWidth - size - 50;
+            const maxY = window.innerHeight - size - 100;
+            const randomX = Math.max(50, Math.random() * maxX);
+            const randomY = Math.max(100, Math.random() * maxY);
+
+            target.style.left = randomX + 'px';
+            target.style.top = randomY + 'px';
+
+            // 設定照片
             if (imgInput.value.trim() !== "") {
-                headImage.src = imgInput.value;
-                headImage.onload = () => { useImage = true; };
-                headImage.onerror = () => { 
-                    alert("圖片網址無效或不支援載入，請換一個。");
-                    useImage = false; 
-                };
+                target.style.backgroundImage = `url('${imgInput.value}')`;
+                target.style.backgroundColor = "transparent";
+                target.innerText = "";
             } else {
-                useImage = false;
+                target.style.backgroundImage = "none";
+                target.style.backgroundColor = "#ff4655";
+                target.innerText = "🎯";
+                target.style.display = "flex";
+                target.style.alignItems = "center";
+                target.style.justifyContent = "center";
+                target.style.fontSize = (size/2) + "px";
             }
+        }
+
+        // 擊中判定
+        target.addEventListener('mousedown', (e) => {
+            if (!gameActive) return;
+            e.stopPropagation(); // 防止觸發背景的點擊
+            hits++;
+            clicks++;
+            score += 10;
+            updateStats();
+            spawnTarget();
         });
 
-        function resize() { 
-            canvas.width = window.innerWidth; 
-            canvas.height = window.innerHeight; 
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        sensSlider.oninput = () => document.getElementById('sens-val').innerText = sensSlider.value;
-        sizeSlider.oninput = () => {
-            document.getElementById('size-val').innerText = sizeSlider.value;
-            target.radius = parseInt(sizeSlider.value);
-        };
-
-        function spawnTarget() {
-            target.y = canvas.height / 2;
-            const padding = target.radius * 2 + 50;
-            target.x = Math.random() * (canvas.width - padding * 2) + padding;
-        }
-
-        function createParticle(x, y, color) {
-            for(let i=0; i<12; i++) {
-                particles.push({
-                    x, y,
-                    vx: (Math.random() - 0.5) * 15,
-                    vy: (Math.random() - 0.5) * 15,
-                    life: 1.0,
-                    color
-                });
-            }
-        }
-
-        canvas.addEventListener('mousedown', (e) => {
+        // 沒點中背景 (扣命中率)
+        gameStage.addEventListener('mousedown', () => {
             if (!gameActive) return;
             clicks++;
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-            const dist = Math.hypot(mouseX - target.x, mouseY - target.y);
-
-            if (dist < target.radius) {
-                hits++;
-                score += 3; 
-                createParticle(target.x, target.y, useImage ? '#00feca' : '#ffffff');
-                spawnTarget();
-            }
             updateStats();
         });
 
@@ -244,10 +228,12 @@
             score = 0; timeLeft = 60; hits = 0; clicks = 0;
             gameActive = true;
             menu.style.display = 'none';
-            spawnTarget();
+            gameStage.style.display = 'block';
+            
             updateStats();
+            spawnTarget();
 
-            const timerInterval = setInterval(() => {
+            timerInterval = setInterval(() => {
                 timeLeft--;
                 timerEl.innerText = timeLeft;
                 if (timeLeft <= 0) {
@@ -255,68 +241,19 @@
                     endGame();
                 }
             }, 1000);
-
-            animate();
         }
 
         function endGame() {
             gameActive = false;
-            menu.style.display = 'block';
-            menu.querySelector('h1').innerText = "訓練結束";
-            menu.querySelector('.subtitle').innerText = `俊凱，你的總分: ${score} | 命中率: ${accEl.innerText}`;
-            menu.querySelector('button').innerText = "再練一次";
-        }
-
-        function animate() {
-            if (!gameActive) return;
-            ctx.fillStyle = '#0f1923';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // 輔助線
-            ctx.strokeStyle = 'rgba(236, 232, 225, 0.05)';
-            ctx.beginPath(); ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2); ctx.stroke();
-
-            // 繪製目標
-            if (useImage) {
-                const imgSize = target.radius * 2;
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
-                ctx.clip(); // 讓圖片變圓形的
-                ctx.drawImage(headImage, target.x - target.radius, target.y - target.radius, imgSize, imgSize);
-                ctx.restore();
-                
-                // 外圈裝飾
-                ctx.beginPath();
-                ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(0, 254, 202, 0.5)';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-            } else {
-                ctx.beginPath();
-                ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#ff4655'; ctx.fill();
-                ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
-                ctx.beginPath();
-                ctx.arc(target.x, target.y, target.radius * 0.4, 0, Math.PI * 2);
-                ctx.fillStyle = '#ffffff'; ctx.fill();
-            }
-
-            // 粒子特效
-            particles.forEach((p, index) => {
-                p.x += p.vx; p.y += p.vy; p.life -= 0.025;
-                ctx.globalAlpha = p.life;
-                ctx.fillStyle = p.color;
-                ctx.fillRect(p.x, p.y, 3, 3);
-                if(p.life <= 0) particles.splice(index, 1);
-            });
-            ctx.globalAlpha = 1.0;
-
-            requestAnimationFrame(animate);
+            alert(`時間到！\n俊凱，你的總分是: ${score}\n命中率: ${accEl.innerText}`);
+            returnToHome();
         }
 
         startBtn.onclick = startGame;
+        backBtn.onclick = returnToHome;
+
+        // 視窗大小改變時重新定位，防止靶子跑出去
+        window.onresize = () => { if(gameActive) spawnTarget(); };
     </script>
 </body>
-</html>
 </html>
