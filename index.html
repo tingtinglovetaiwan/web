@@ -144,7 +144,6 @@
     <div class="card">
         <div class="badge">🎉 賀！特招榜首 🎉</div>
         
-        <!-- 【照片位置】請把 src 改成你同學的照片網址（或放在 GitHub 同資料夾的檔名，例如：wenrui.jpg） -->
         <div class="photo-container">
             <img src="https://i.postimg.cc/GprQqpwV/IMG-3280.png" alt="許文睿的照片">
         </div>
@@ -157,8 +156,8 @@
         <button class="btn" onclick="celebrate()">點擊發射彩帶慶祝 🔊</button>
     </div>
 
-    <!-- 【MP3 音效位置】把 src 改成你的 MP3 檔案名稱或網址即可 -->
-    <audio id="https://files.catbox.moe/i4akxy.mp3" preload="auto"></audio>
+    <!-- 【已修正】這裡正確對應了 id 與 src 欄位 -->
+    <audio id="celebrate-sound" src="https://files.catbox.moe/i4akxy.mp3" preload="auto"></audio>
 
     <script>
         const canvas = document.getElementById('confetti-canvas');
@@ -205,7 +204,6 @@
         }
 
         function celebrate() {
-            // 播放 MP3，currentTime = 0 確保連續狂點按鈕時聲音能重複中斷重播
             sound.currentTime = 0;
             sound.play().catch(err => {
                 console.log("提示：需要與網頁產生點擊互動後，瀏覽器才允許播放聲音。", err);
