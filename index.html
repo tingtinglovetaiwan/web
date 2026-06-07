@@ -3,230 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>觀音高中304許文睿</title>
+    <title>天天玩樂園 - NPx家族強力招生中！</title>
+    <!-- 引入 Google 字體與 Tailwind CSS 讓網頁變好看 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 基礎設定與海洋風深色背景 */
         body {
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #020617 100%);
-            color: #f8fafc;
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); /* 活潑的漸層背景 */
         }
-
-        /* 慶祝卡片主體 */
-        .card {
-            background: rgba(30, 41, 59, 0.75);
-            backdrop-filter: blur(12px);
-            border: 2px solid #eab308; /* 金色邊框 */
+        .game-card {
             border-radius: 24px;
-            padding: 2.5rem 2rem;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(234, 179, 8, 0.2);
-            max-width: 480px;
-            width: 90%;
-            transform: translateY(0);
-            animation: float 4s ease-in-out infinite;
-            z-index: 10;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
         }
-
-        /* 卡片漂浮微動效（模擬水波感） */
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        /* 榮譽稱號樣式 */
-        .badge {
-            background: linear-gradient(90deg, #ca8a04, #facc15);
-            color: #0f172a;
-            padding: 0.5rem 1.5rem;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4);
-        }
-
-        /* 許文睿的照片框架 */
-        .photo-container {
-            width: 180px;
-            height: 180px;
-            margin: 0 auto 1.5rem auto;
-            border-radius: 50%;
-            border: 4px solid #facc15;
-            box-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
-            overflow: hidden;
-            background-color: #1e293b;
-        }
-
-        .photo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* 名字大標題 */
-        h1 {
-            font-size: 2.8rem;
-            margin: 0 0 1rem 0;
-            letter-spacing: 4px;
-            background: linear-gradient(to right, #ffffff, #93c5fd);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* 錄取科系 */
-        .department {
-            font-size: 1.4rem;
-            color: #38bdf8; /* 天藍色 */
-            font-weight: 600;
-            margin-bottom: 0.4rem;
-        }
-
-        /* 正取1頭銜 */
-        .rank {
-            font-size: 2.2rem;
-            color: #facc15; /* 金色 */
-            font-weight: 800;
-            margin-bottom: 2rem;
-            text-shadow: 0 0 15px rgba(250, 204, 21, 0.6);
-        }
-
-        /* 互動按鈕 */
-        .btn {
-            background: #eab308;
-            color: #0f172a;
-            border: none;
-            padding: 1rem 2rem;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 20px rgba(234, 179, 8, 0.3);
-        }
-
-        .btn:hover {
-            background: #facc15;
-            transform: scale(1.05);
-            box-shadow: 0 6px 25px rgba(234, 179, 8, 0.5);
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        /* 彩帶畫布置頂 */
-        #confetti-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 999;
+        .game-card:hover {
+            transform: translateY(-5px);
         }
     </style>
 </head>
-<body>
+<body class="text-gray-800 min-h-screen flex flex-col justify-between">
 
-    <!-- 慶祝彩帶畫布 -->
-    <canvas id="confetti-canvas"></canvas>
-
-    <!-- 網頁主卡片 -->
-    <div class="card">
-        <div class="badge">🎉 賀！俊凱的兒子是特招榜首 🎉</div>
+    <!-- 1. 頂部主視覺區 (Hero) -->
+    <header class="container mx-auto px-6 py-12 text-center max-w-4xl">
+        <!-- 家族標誌/首頁大圖 -->
+        <div class="w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white flex items-center justify-center">
+            <!-- 替換：你的家族 Logo 網址 -->
+            <img src="https://p2.bahamut.com.tw/B/2KU/53/8fc72aff6b63ea312e9fdcc27f1c2zd5.JPG" alt="家族Logo" class="w-full h-full object-cover">
+        </div>
         
-        <div class="photo-container">
-            <img src="https://i.postimg.cc/GprQqpwV/IMG-3280.png" alt="許文睿的照片">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-amber-600 mb-4 tracking-wide">
+            🌟 NPx 招生中！ 🌟
+        </h1>
+        <p class="text-lg md:text-xl text-amber-800 font-medium mb-8">
+            「在天天玩樂園，跟著Hzr7一起詐騙!」
+        </p>
+
+        <!-- 行動呼籲按鈕 (點擊會播音效並跳轉表單) -->
+        <!-- 替換：把 href="#" 改成你的 Google 表單連結 -->
+        <a href="https://forms.gle/HD8jtSY5msyDY65Z7" target="_blank" onclick="playClickSound()" 
+           class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-black text-xl px-12 py-5 rounded-full shadow-lg transform hover:scale-105 transition active:scale-95">
+            填寫表單・申請加入 🚀
+        </a>
+    </header>
+
+    <!-- 2. 核心內容區 -->
+    <main class="container mx-auto px-6 max-w-4xl flex-grow mb-12">
+        <div class="grid md:grid-cols-2 gap-8">
+            
+            <!-- 家族福利卡片 -->
+            <div class="bg-white p-8 game-card">
+                <h2 class="text-2xl font-bold text-amber-600 mb-4 flex items-center">
+                    🎁 專屬福利
+                </h2>
+                <ul class="space-y-3 text-gray-600 font-medium">
+                    <li class="flex items-center">✅ 團長會帶你詐騙</li>
+                    <li class="flex items-center">✅ 團長會開車帶你出去玩</li>
+                    <li class="flex items-center">✅ 專屬 Discord 歡樂語音群</li>
+                    <li class="flex items-center">✅ 成員熱情好相處，上線絕不孤單</li>
+                </ul>
+            </div>
+
+            <!-- 入團條件卡片 -->
+            <div class="bg-white p-8 game-card">
+                <h2 class="text-2xl font-bold text-amber-600 mb-4 flex items-center">
+                    📢 招募條件
+                </h2>
+                <ul class="space-y-3 text-gray-600 font-medium">
+                    <li class="flex items-center">📌 要會阿公67</li>
+                    <li class="flex items-center">📌 積極參與家族活動，拒絕幽靈人口</li>
+                    <li class="flex items-center">📌 配合家族改名（前綴：NPx｜）</li>
+                    <li class="flex items-center">📌 嚴禁嘴砲、開掛、互相尊重友善</li>
+                </ul>
+            </div>
+
         </div>
 
-        <h1>許文睿</h1>
-        <div class="department">國立臺灣海洋大學</div>
-        <div class="department">水產養殖學系</div>
-        <div class="rank">🔥 特招正取 1 🔥</div>
-        
-        <button class="btn" onclick="celebrate()">點擊發射彩帶慶祝 🔊</button>
-    </div>
+        <!-- 3. 歡樂日常照片牆 -->
+        <section class="mt-12 bg-white/60 p-8 rounded-3xl shadow-sm">
+            <h2 class="text-2xl font-bold text-center text-amber-700 mb-6">📸 家族日常點滴</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- 替換：以下 src 的網址都可以改成你們遊戲內截圖的網址 -->
+                <img src="https://picsum.photos/400/300?random=1" alt="遊戲截圖1" class="rounded-xl shadow-sm hover:opacity-90 transition">
+                <img src="https://picsum.photos/400/300?random=2" alt="遊戲截圖2" class="rounded-xl shadow-sm hover:opacity-90 transition">
+                <img src="https://picsum.photos/400/300?random=3" alt="遊戲截圖3" class="rounded-xl shadow-sm hover:opacity-90 transition">
+            </div>
+        </section>
+    </main>
 
-    <!-- 【已修正】這裡正確對應了 id 與 src 欄位 -->
-    <audio id="celebrate-sound" src="https://files.catbox.moe/i4akxy.mp3" preload="auto"></audio>
+    <!-- 4. 頁尾版權 -->
+    <footer class="bg-amber-800/10 text-center py-6 text-sm text-amber-900/60 font-medium">
+        © 2026 天天玩樂園 NPx. All Rights Reserved.
+    </footer>
 
+    <!-- 音效控制 JavaScript -->
     <script>
-        const canvas = document.getElementById('confetti-canvas');
-        const ctx = canvas.getContext('2d');
-        const sound = document.getElementById('celebrate-sound');
-        let particles = [];
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        class Particle {
-            constructor() {
-                this.x = canvas.width / 2;
-                this.y = canvas.height + 20;
-                this.size = Math.random() * 8 + 6;
-                this.speedX = (Math.random() - 0.5) * 16;
-                this.speedY = -(Math.random() * 15 + 18);
-                this.gravity = 0.45;
-                const colors = ['#facc15', '#eab308', '#38bdf8', '#0ea5e9', '#ffffff', '#22c55e'];
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.rotation = Math.random() * 360;
-                this.rotationSpeed = (Math.random() - 0.5) * 12;
-            }
-
-            update() {
-                this.speedY += this.gravity;
-                this.x += this.speedX;
-                this.y += this.speedY;
-                this.rotation += this.rotationSpeed;
-            }
-
-            draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation * Math.PI / 180);
-                ctx.fillStyle = this.color;
-                ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
-                ctx.restore();
-            }
-        }
-
-        function celebrate() {
-            sound.currentTime = 0;
-            sound.play().catch(err => {
-                console.log("提示：需要與網頁產生點擊互動後，瀏覽器才允許播放聲音。", err);
+        function playClickSound() {
+            // 替換：請將下方的網址換成你的 MP3 音效直連網址
+            const soundUrl = "file:///C:/Users/User/Downloads/fb5570f3c93df810ec663ef0b04823ed.mp3"; 
+            
+            const audio = new Audio(soundUrl);
+            audio.play().catch(function(error) {
+                // 防止部分瀏覽器因為安全性阻擋自動播放音效
+                console.log("音效播放失敗，但網頁會照常跳轉：", error);
             });
-
-            for (let i = 0; i < 120; i++) {
-                particles.push(new Particle());
-            }
         }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = particles.length - 1; i >= 0; i--) {
-                particles[i].update();
-                particles[i].draw();
-                if (particles[i].y > canvas.height + 20 || particles[i].x < -20 || particles[i].x > canvas.width + 20) {
-                    particles.splice(i, 1);
-                }
-            }
-            requestAnimationFrame(animate);
-        }
-
-        animate();
     </script>
 </body>
 </html>
